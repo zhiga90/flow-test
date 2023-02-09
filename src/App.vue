@@ -1,19 +1,25 @@
 <template>
-	<v-stage
-		ref="stage"
-		:config="configKonva"
-		class="stage"
-		@wheel="wheel"
-	>
-		<v-layer>
-			<v-circle :config="configCircle" />
-		</v-layer>
-	</v-stage>
+	<LayoutDefault @zoom="zoom">
+		<v-stage
+			ref="stage"
+			:config="configKonva"
+			class="stage"
+			@wheel="wheel"
+		>
+			<v-layer>
+				<v-circle :config="configCircle" />
+			</v-layer>
+		</v-stage>
+	</LayoutDefault>
 </template>
 
 <script>
+import LayoutDefault from './Layout.vue'
 
 export default {
+	components: {
+		LayoutDefault,
+	},
 	data() {
 		return {
 			configKonva: {
@@ -21,8 +27,8 @@ export default {
 				height: 1000,
 			},
 			configCircle: {
-				x: 100,
-				y: 100,
+				x: 500,
+				y: 400,
 				radius: 70,
 				fill: 'red',
 				stroke: 'black',
@@ -45,30 +51,29 @@ export default {
 			const scale = width / this.configKonva.width
 			const stage = this.$refs.stage.getStage()
 
-			stage.width(this.configKonva.width * scale);
-			stage.height(this.configKonva.height * scale);
-			stage.scale({ x: scale, y: scale });
+			stage.width(this.configKonva.width * scale)
+			stage.height(this.configKonva.height * scale)
+			stage.scale({x: scale, y: scale})
 		},
 		wheel(e) {
 			e.evt.preventDefault()
-
+			let direction = e.evt.deltaY > 0 ? -1 : 1
+			if (e.evt.ctrlKey) {
+				direction = -direction
+			}
+			this.zoom(direction)
+		},
+		zoom(direction, isCenter) {
 			const stage = this.$refs.stage.getStage()
 			const oldScale = stage.scaleX()
-			const pointer = stage.getPointerPosition()
+			const pointer = isCenter
+				? {x: this.configKonva.width / 2, y: this.configKonva.height / 2}
+				: stage.getPointerPosition()
 
 			const mousePointTo = {
 				x: (pointer.x - stage.x()) / oldScale,
 				y: (pointer.y - stage.y()) / oldScale,
 			};
-
-			// how to scale? Zoom in? Or zoom out?
-			let direction = e.evt.deltaY > 0 ? 1 : -1
-
-			// when we zoom on trackpad, e.evt.ctrlKey is true
-			// in that case lets revert direction
-			if (e.evt.ctrlKey) {
-				direction = -direction;
-			}
 
 			const newScale = direction > 0 ? oldScale * this.scaleBy : oldScale / this.scaleBy
 
@@ -85,5 +90,5 @@ export default {
 </script>
 
 <style lang="sass">
-@import "normalize.css"
+@import "./style/main.sass"
 </style>
