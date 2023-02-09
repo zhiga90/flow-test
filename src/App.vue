@@ -17,8 +17,8 @@ export default {
 	data() {
 		return {
 			configKonva: {
-				width: 200,
-				height: 200,
+				width: 1000,
+				height: 1000,
 			},
 			configCircle: {
 				x: 100,
@@ -29,10 +29,26 @@ export default {
 				strokeWidth: 4,
 			},
 
-			scaleBy: 1.04,
+			scaleBy: 1.1,
 		}
 	},
+	mounted() {
+		this.setSize()
+		window.addEventListener('resize', this.setSize)
+	},
+	destroyed() {
+		window.removeEventListener('resize', this.setSize)
+	},
 	methods: {
+		setSize() {
+			const width = Math.floor(document.documentElement.clientWidth)
+			const scale = width / this.configKonva.width
+			const stage = this.$refs.stage.getStage()
+
+			stage.width(this.configKonva.width * scale);
+			stage.height(this.configKonva.height * scale);
+			stage.scale({ x: scale, y: scale });
+		},
 		wheel(e) {
 			e.evt.preventDefault()
 
