@@ -1,21 +1,23 @@
 <template>
-    <v-stage :config="configKonva" class="stage">
-        <v-layer>
-        </v-layer>
-    </v-stage>
+	<v-stage
+		:config="configKonva"
+		class="stage"
+	>
+		<v-layer />
+	</v-stage>
 </template>
 
 <script>
 
 export default {
-  data() {
-    return {
-      configKonva: {
-        width: 200,
-        height: 200
-      },
-    };
-  }
+	data() {
+		return {
+			configKonva: {
+				width: 200,
+				height: 200,
+			},
+		};
+	},
 };
 </script>
 
