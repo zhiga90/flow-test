@@ -26,13 +26,15 @@
 		<div class="for-z-index horizontal">
 			<button
 				class="button default history undo"
-				@click="$emit('history', -1)"
+				:disabled="!isUndo"
+				@click="historyStep(-1)"
 			>
 				<span class="material-icons-round"> undo </span>
 			</button>
 			<button
 				class="button default history redo"
-				@click="$emit('history', 1)"
+				:disabled="!isRedo"
+				@click="historyStep(1)"
 			>
 				<span class="material-icons-round"> redo </span>
 			</button>
@@ -42,8 +44,18 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from 'vuex'
+
 export default {
 	name: 'LayoutDefault',
+
+	computed: {
+		...mapGetters('history', ['isUndo', 'isRedo']),
+	},
+
+	methods: {
+		...mapActions('history', ['historyStep']),
+	},
 }
 </script>
 
@@ -96,6 +108,15 @@ export default {
 			box-shadow: 0 0 $button-size / 4 var(--grey02)
 			color: $primary-hover
 			border-color: $primary
+		&:disabled
+			cursor: auto
+			color: var(--grey02)
+			border-color: var(--grey03)
+			&:hover
+				color: var(--grey02)
+				box-shadow: 0 0 0 var(--white01)
+				border-color: var(--grey03)
+
 
 		&.big
 			width: $button-size * 1.3

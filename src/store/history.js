@@ -1,25 +1,70 @@
+let elements = []
+let history = JSON.parse(localStorage.getItem('history'))
+let step = JSON.parse(localStorage.getItem('step'))
+if(!Number.isInteger(step)) step = 0
+if (Array.isArray(history) && history.length && step > 0) {
+	elements = JSON.parse(history[step - 1])
+} else {
+	history = []
+}
+
 export default {
 	namespaced: true,
 	state: {
-		elements: [
-			{
-				component: 'v-rect',
-				config: {
-					x: 500,
-					y: 400,
-					width: 70,
-					height: 70,
-					stroke: 'var(--grey01)',
-					strokeWidth: 1,
-					draggable: true,
-				},
-			},
-		],
+		elements,
+		history,
+		step,
 	},
 	getters: {
 		elements: (state) => state.elements,
+		history: (state) => state.history,
+		isHistory: (state) => !!state.history.length,
+		isUndo: (state) => state.step > 1,
+		isRedo: (state) => state.step < state.history.length,
 	},
-	mutations: {},
-	actions: {},
+	mutations: {
+		toHistory(state, elements) {
+			if (state.history.length === 5) state.history.shift()
+			state.history.push(JSON.stringify(elements))
+			localStorage.setItem('history', JSON.stringify(state.history))
+		},
+		clearHistory(state) {
+			state.history = state.history[0]
+			localStorage.setItem('history', JSON.stringify(state.history))
+		},
+		setStep(state, step) {
+			state.step = step
+			localStorage.setItem('step', JSON.stringify(step))
+			state.elements = JSON.parse(state.history[step - 1]) || []
+		},
+	},
+	actions: {
+		add({state, dispatch}, el) {
+			const elements = [...state.elements, ...[el]]
+			dispatch('toHistory', elements)
+		},
+		addMany({state, dispatch}, els) {
+			const elements = [...state.elements, ...els]
+			dispatch('toHistory', elements)
+		},
+		updateByIndex({state, dispatch}, {el, index}) {
+			const component = 'v-' + el.getClassName().toLowerCase()
+			state.elements[index] = {component, config: el.attrs}
+			dispatch('toHistory', state.elements)
+		},
+		toHistory({state, commit}, els) {
+			const step = state.step < 5 ? state.step + 1 : state.step
+			commit('toHistory', els)
+			commit('setStep', step)
+		},
+		clearHistory({commit}) {
+			commit('clearHistory')
+			commit('setStep', 1)
+		},
+		historyStep({state, commit}, step) {
+			if(step < 0 && state.step > 1) commit('setStep', state.step - 1)
+			if(step > 0 && state.step < state.history.length) commit('setStep', state.step + 1)
+		},
+	},
 	modules: {},
 }

@@ -6,26 +6,21 @@
 			class="stage"
 			@wheel="wheel"
 		>
-			<v-layer>
-				<component
-					v-for="(el, index) in elements"
-					:key="'el' + index"
-					:is="el.component"
-					:config="el.config"
-				/>
-			</v-layer>
+			<Elements />
 		</v-stage>
 	</LayoutDefault>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
 import LayoutDefault from './Layout.vue'
+import Elements from './Elements.vue'
 
 export default {
 	components: {
 		LayoutDefault,
+		Elements,
 	},
+
 	data() {
 		return {
 			configKonva: {
@@ -33,13 +28,10 @@ export default {
 				height: 1000,
 				draggable: true,
 			},
-
 			scaleBy: 1.1,
 		}
 	},
-	computed: {
-		...mapGetters('history', ['elements']),
-	},
+
 	mounted() {
 		this.setSize()
 		window.addEventListener('resize', this.setSize)
@@ -47,6 +39,7 @@ export default {
 	destroyed() {
 		window.removeEventListener('resize', this.setSize)
 	},
+
 	methods: {
 		setSize() {
 			const width = Math.floor(document.documentElement.clientWidth)
