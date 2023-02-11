@@ -7,14 +7,19 @@
 			@wheel="wheel"
 		>
 			<v-layer>
-				<v-circle :config="configCircle" />
-				<v-circle :config="configCircle" />
+				<component
+					v-for="(el, index) in elements"
+					:key="'el' + index"
+					:is="el.component"
+					:config="el.config"
+				/>
 			</v-layer>
 		</v-stage>
 	</LayoutDefault>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import LayoutDefault from './Layout.vue'
 
 export default {
@@ -28,18 +33,12 @@ export default {
 				height: 1000,
 				draggable: true,
 			},
-			configCircle: {
-				x: 500,
-				y: 400,
-				radius: 70,
-				fill: 'red',
-				stroke: 'black',
-				strokeWidth: 4,
-				draggable: true,
-			},
 
 			scaleBy: 1.1,
 		}
+	},
+	computed: {
+		...mapGetters('history', ['elements']),
 	},
 	mounted() {
 		this.setSize()
@@ -93,5 +92,5 @@ export default {
 </script>
 
 <style lang="sass">
-@import "./style/main.sass"
+@import "style/main"
 </style>

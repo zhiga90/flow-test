@@ -17,6 +17,7 @@ module.exports = {
     'import/first': 'off',
     quotes: ['warn', 'single'],
     'no-unused-vars': ['warn'],
+    'no-undef': ['warn'],
     'no-trailing-spaces': ['warn', { skipBlankLines: true }],
   },
 }
