@@ -6,6 +6,8 @@
 			:is="el.component"
 			:config="el.config"
 			@dragend="updateByIndex({el: $event.target, index})"
+			@mouseenter="$emit('cursor', 'pointer')"
+			@mouseleave="$emit('cursor', 'default')"
 		/>
 	</v-layer>
 </template>
@@ -37,6 +39,7 @@ export default {
 					draggable: true,
 					width: 250,
 					height: 250,
+					cursor: 'move',
 					y: (window.innerHeight / 2) - 125,
 				},
 			}

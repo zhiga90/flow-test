@@ -6,7 +6,7 @@
 			class="stage"
 			@wheel="wheel"
 		>
-			<Elements />
+			<Elements @cursor="$refs.stage.getStage().container().style.cursor = $event" />
 		</v-stage>
 	</LayoutDefault>
 </template>

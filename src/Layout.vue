@@ -76,15 +76,19 @@ export default {
 
 		&.vertical
 			flex-direction: column
+
 			.button
 				margin-top: $button-size / 2
+
 				&:first-child
 					margin-top: 0
 
 		&.horizontal
 			left: ($button-size) + ($button-size * 1.3)
+
 			.button
 				margin-left: $button-size / 2
+
 				&:first-child
 					margin-left: 0
 
@@ -102,16 +106,20 @@ export default {
 		border: solid 1px var(--grey02)
 		color: var(--grey01)
 		background: var(--white01)
+
 		span
 			font-size: $button-size / 1.5
+
 		&:hover
 			box-shadow: 0 0 $button-size / 4 var(--grey02)
 			color: $primary-hover
 			border-color: $primary
+
 		&:disabled
 			cursor: auto
 			color: var(--grey02)
 			border-color: var(--grey03)
+
 			&:hover
 				color: var(--grey02)
 				box-shadow: 0 0 0 var(--white01)
@@ -122,6 +130,7 @@ export default {
 			width: $button-size * 1.3
 			height: $button-size * 1.3
 			border-radius: $button-size * 1.3
+
 			span
 				font-size: $button-size
 
@@ -129,6 +138,7 @@ export default {
 			border: $primary
 			color: var(--white01)
 			background: $primary
+
 			&:hover
 				background: $primary-hover
 </style>
