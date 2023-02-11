@@ -8,6 +8,7 @@
 		>
 			<v-layer>
 				<v-circle :config="configCircle" />
+				<v-circle :config="configCircle" />
 			</v-layer>
 		</v-stage>
 	</LayoutDefault>
@@ -25,6 +26,7 @@ export default {
 			configKonva: {
 				width: 1000,
 				height: 1000,
+				draggable: true,
 			},
 			configCircle: {
 				x: 500,
@@ -33,6 +35,7 @@ export default {
 				fill: 'red',
 				stroke: 'black',
 				strokeWidth: 4,
+				draggable: true,
 			},
 
 			scaleBy: 1.1,
