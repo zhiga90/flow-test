@@ -14,13 +14,19 @@
 				class="button default zoom plus"
 				@click="$emit('zoom', 1, true)"
 			>
-				<span class="material-icons-round"> add </span>
+				<span class="material-icons-round"> zoom_in </span>
 			</button>
 			<button
 				class="button default zoom minus"
 				@click="$emit('zoom', -1, true)"
 			>
-				<span class="material-icons-round"> remove </span>
+				<span class="material-icons-round"> zoom_out </span>
+			</button>
+			<button
+				class="button default zoom reset"
+				@click="$emit('zoom', 0)"
+			>
+				<span class="material-icons-round"> zoom_in_map </span>
 			</button>
 		</div>
 		<div class="for-z-index horizontal">
@@ -38,6 +44,13 @@
 			>
 				<span class="material-icons-round"> redo </span>
 			</button>
+			<button
+				class="button default history clear"
+				:disabled="!isClear"
+				@click="clear"
+			>
+				<span class="material-icons-round"> close </span>
+			</button>
 		</div>
 		<slot />
 	</div>
@@ -50,11 +63,15 @@ export default {
 	name: 'LayoutDefault',
 
 	computed: {
-		...mapGetters('history', ['isUndo', 'isRedo']),
+		...mapGetters('history', ['isUndo', 'isRedo', 'isClear']),
 	},
 
 	methods: {
-		...mapActions('history', ['historyStep']),
+		...mapActions('history', ['historyStep', 'clearHistory', 'removeElements']),
+		clear() {
+			this.removeElements()
+			this.$emit('zoom', 0)
+		},
 	},
 }
 </script>

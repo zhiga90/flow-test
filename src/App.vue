@@ -1,12 +1,15 @@
 <template>
-	<LayoutDefault @zoom="zoom">
+	<LayoutDefault @add="add++" @zoom="zoom">
 		<v-stage
 			ref="stage"
 			:config="configKonva"
 			class="stage"
 			@wheel="wheel"
 		>
-			<Elements @cursor="$refs.stage.getStage().container().style.cursor = $event" />
+			<Elements
+				:add-count="add"
+				@cursor="$refs.stage.getStage().container().style.cursor = $event"
+			/>
 		</v-stage>
 	</LayoutDefault>
 </template>
@@ -29,6 +32,7 @@ export default {
 				draggable: true,
 			},
 			scaleBy: 1.1,
+			add: 0,
 		}
 	},
 
@@ -58,10 +62,10 @@ export default {
 			}
 			this.zoom(direction)
 		},
-		zoom(direction, isCenter) {
+		zoom(direction, fromCenter) {
 			const stage = this.$refs.stage.getStage()
 			const oldScale = stage.scaleX()
-			const pointer = isCenter
+			const pointer = fromCenter
 				? {x: this.configKonva.width / 2, y: this.configKonva.height / 2}
 				: stage.getPointerPosition()
 
@@ -70,14 +74,18 @@ export default {
 				y: (pointer.y - stage.y()) / oldScale,
 			};
 
-			const newScale = direction > 0 ? oldScale * this.scaleBy : oldScale / this.scaleBy
+			let newScale = 1
+			if (direction !== 0) newScale = direction > 0 ? oldScale * this.scaleBy : oldScale / this.scaleBy
 
 			stage.scale({x: newScale, y: newScale})
 
-			const newPos = {
-				x: pointer.x - mousePointTo.x * newScale,
-				y: pointer.y - mousePointTo.y * newScale,
-			};
+			let newPos = {x: 0, y: 0}
+			if (direction !== 0)
+				newPos = {
+					x: pointer.x - mousePointTo.x * newScale,
+					y: pointer.y - mousePointTo.y * newScale,
+				}
+
 			stage.position(newPos)
 		},
 	},
