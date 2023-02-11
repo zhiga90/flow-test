@@ -1,15 +1,10 @@
 @import "normalize.css"
 
-$material-design-icons-font-path: '~@material-design-icons/font/'
-@import '@material-design-icons/font/round.scss'
+$material-design-icons-font-path: "~@material-design-icons/font/"
+@import "@material-design-icons/font/round.scss"
 
-html
-	height: 100%
+@import "global"
 
-html, body
-	min-height: 100%
-
-
-body
-	overflow: hidden
-	background: $grey-03
+\:root
+	@each $name, $color in $colors
+		--#{$name}: #{$color}

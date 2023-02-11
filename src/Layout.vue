@@ -82,18 +82,18 @@ export default {
 		display: flex
 		align-items: center
 		justify-content: center
-		box-shadow: 0 0 0 $white
+		box-shadow: 0 0 0 var(--white01)
 		transition: all .3s
 		width: $button-size
 		height: $button-size
 		border-radius: $button-size
-		border: solid 1px $grey-02
-		color: $grey-01
-		background: $white
+		border: solid 1px var(--grey02)
+		color: var(--grey01)
+		background: var(--white01)
 		span
 			font-size: $button-size / 1.5
 		&:hover
-			box-shadow: 0 0 $button-size / 4 $grey-02
+			box-shadow: 0 0 $button-size / 4 var(--grey02)
 			color: $primary-hover
 			border-color: $primary
 
@@ -106,7 +106,7 @@ export default {
 
 		&.primary
 			border: $primary
-			color: $white
+			color: var(--white01)
 			background: $primary
 			&:hover
 				background: $primary-hover

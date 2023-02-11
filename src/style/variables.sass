@@ -1,18 +1,7 @@
+@use "sass:map"
+@import "theme"
+
 $button-size: 40px
 
-$blue: var(--blue)
-$blue2: var(--blue2)
-$white:var(--white)
-$grey-01: var(--grey-01)
-$grey-02: var(--grey-02)
-$grey-03: var(--grey-03)
-$primary: $blue
-$primary-hover: $blue2
-
-:root
-	--blue: #30b0da
-	--blue2: #059dd2
-	--white: white
-	--grey-01: #3E4242FF
-	--grey-02: #e1e0e1
-	--grey-03: #edf0f3
+$primary: map.get($colors, "blue01")
+$primary-hover: map.get($colors, "blue02")
