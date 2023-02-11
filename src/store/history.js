@@ -24,9 +24,12 @@ export default {
 	},
 	mutations: {
 		toHistory(state, elements) {
-			if (state.history.length === 5) state.history.shift()
+			if (state.history.length === 30) state.history.shift()
 			state.history.push(JSON.stringify(elements))
 			localStorage.setItem('history', JSON.stringify(state.history))
+		},
+		deleteHistoryFrom(state, index) {
+			state.history.splice(index)
 		},
 		clearHistory(state) {
 			state.history = state.history[0]
@@ -53,7 +56,10 @@ export default {
 			dispatch('toHistory', state.elements)
 		},
 		toHistory({state, commit}, els) {
-			const step = state.step < 5 ? state.step + 1 : state.step
+			const step = state.step < 30 ? state.step + 1 : state.step
+			if (state.step !== state.history.length) {
+				commit('deleteHistoryFrom', state.step)
+			}
 			commit('toHistory', els)
 			commit('setStep', step)
 		},
