@@ -6,6 +6,7 @@
 		<div class="for-z-index vertical">
 			<button
 				class="button primary big add plus"
+				:disabled="!isAdd"
 				@click="$emit('add')"
 			>
 				<span class="material-icons-round"> add </span>
@@ -63,7 +64,7 @@ export default {
 	name: 'LayoutDefault',
 
 	computed: {
-		...mapGetters('history', ['isUndo', 'isRedo', 'isClear']),
+		...mapGetters('history', ['isAdd', 'isUndo', 'isRedo', 'isClear']),
 	},
 
 	methods: {
@@ -158,4 +159,14 @@ export default {
 
 			&:hover
 				background: $primary-hover
+
+			&:disabled
+				cursor: auto
+				border-color: $primary-disabled
+				background: $primary-disabled
+
+				&:hover
+					box-shadow: 0 0 0 var(--white01)
+					border-color: $primary-disabled
+					background: $primary-disabled
 </style>

@@ -1,10 +1,14 @@
 <template>
-	<LayoutDefault @add="add++" @zoom="zoom">
+	<LayoutDefault
+		@add="add++"
+		@zoom="zoom"
+	>
 		<v-stage
 			ref="stage"
 			:config="configKonva"
 			class="stage"
 			@wheel="wheel"
+			@mousemove="mousemove"
 		>
 			<Elements
 				:add-count="add"
@@ -15,6 +19,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import LayoutDefault from './Layout.vue'
 import Elements from './Elements.vue'
 
@@ -34,6 +39,10 @@ export default {
 			scaleBy: 1.1,
 			add: 0,
 		}
+	},
+
+	computed: {
+		...mapGetters('history', ['elements', 'mode']),
 	},
 
 	mounted() {
@@ -87,6 +96,15 @@ export default {
 				}
 
 			stage.position(newPos)
+		},
+		mousemove() {
+			if (this.mode === 'connect') {
+				const stage = this.$refs.stage.getStage()
+				const pointer = stage.getRelativePointerPosition()
+				const el = this.elements[this.elements.length - 1]
+				const points = el.config.points
+				el.config.points = [points[0], points[1], pointer.x - 1, pointer.y - 1]
+			}
 		},
 	},
 }

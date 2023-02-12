@@ -14,16 +14,28 @@ export default {
 		elements,
 		history,
 		step,
+		mode: null,
 	},
 	getters: {
 		elements: (state) => state.elements,
 		history: (state) => state.history,
 		isHistory: (state) => !!state.history.length,
-		isUndo: (state) => state.step > 1,
-		isRedo: (state) => state.step < state.history.length,
-		isClear: (state) => !!state.elements.length,
+		isUndo: (state) => state.step > 1 && state.mode !== 'connect',
+		isRedo: (state) => state.step < state.history.length && state.mode !== 'connect',
+		isClear: (state) => state.elements.length && state.mode !== 'connect',
+		isAdd: (state) => state.mode !== 'connect',
+		mode: (state) => state.mode,
 	},
 	mutations: {
+		setActive(state, el) {
+			state.elements.push(el)
+		},
+		removeActive(state) {
+			state.elements.splice(state.elements.length - 1)
+		},
+		setMode (state, mode) {
+			state.mode = mode
+		},
 		toHistory(state, elements) {
 			if (state.history.length === 30) state.history.shift()
 			state.history.push(JSON.stringify(elements))
@@ -71,6 +83,18 @@ export default {
 		},
 		removeElements({dispatch}) {
 			dispatch('toHistory', [])
+		},
+		newConnectMode({commit}, el) {
+			commit('setActive', el)
+			commit('setMode', 'connect')
+		},
+		connectModeSuccess({dispatch}, el) {
+			dispatch('connectModeReject')
+			console.log(el)
+		},
+		connectModeReject({commit}) {
+			commit('removeActive')
+			commit('setMode', 'null')
 		},
 	},
 	modules: {},
