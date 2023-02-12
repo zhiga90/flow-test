@@ -28,10 +28,10 @@ export default {
 	},
 	mutations: {
 		setActive(state, el) {
-			state.elements.push(el)
+			state.elements.unshift(el)
 		},
 		removeActive(state) {
-			state.elements.splice(state.elements.length - 1)
+			state.elements.shift()
 		},
 		setMode (state, mode) {
 			state.mode = mode
@@ -52,11 +52,11 @@ export default {
 		},
 	},
 	actions: {
-		add({state, dispatch}, el) {
-			const elements = [...state.elements, ...[el]]
+		add({state, dispatch}, {el, isToTop}) {
+			const elements = isToTop ? [...[el], ...state.elements] : [...state.elements, ...[el]]
 			dispatch('toHistory', elements)
 		},
-		addMany({state, dispatch}, els) {
+		addMany({state, dispatch}, {els}) {
 			const elements = [...state.elements, ...els]
 			dispatch('toHistory', elements)
 		},
@@ -90,7 +90,7 @@ export default {
 		},
 		connectModeSuccess({dispatch}, el) {
 			dispatch('connectModeReject')
-			console.log(el)
+			dispatch('add', {el, isToTop: true})
 		},
 		connectModeReject({commit}) {
 			commit('removeActive')
