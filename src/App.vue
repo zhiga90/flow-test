@@ -32,8 +32,8 @@ export default {
 	data() {
 		return {
 			configKonva: {
-				width: 1000,
-				height: 1000,
+				width: window.innerWidth || document.body.clientWidth,
+				height: window.innerHeight || document.body.clientHeight,
 				draggable: true,
 			},
 			scaleBy: 1.1,
@@ -55,12 +55,12 @@ export default {
 
 	methods: {
 		setSize() {
-			const width = Math.floor(document.documentElement.clientWidth)
-			const scale = width / this.configKonva.width
 			const stage = this.$refs.stage.getStage()
+			const width = stage.width()
+			const scale = width / stage.width()
 
-			stage.width(this.configKonva.width * scale)
-			stage.height(this.configKonva.height * scale)
+			stage.width(window.innerWidth || document.body.clientWidth)
+			stage.height(window.innerHeight || document.body.clientHeight)
 			stage.scale({x: scale, y: scale})
 		},
 		wheel(e) {

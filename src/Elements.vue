@@ -101,17 +101,17 @@ export default {
 		addDef() {
 			const el = JSON.parse(JSON.stringify(this.defBlock))
 			el.id = this.getId()
-			el.config.x = (+window.innerWidth / 2) - 125
+			el.config.x = (window.innerWidth / 2) - 125
 			this.add({el, wrap: 'blocks'})
 		},
 		addDefs() {
 			const el1 = JSON.parse(JSON.stringify(this.defBlock))
 			const id = this.getId()
 			el1.id = id
-			el1.config.x = (+window.innerWidth / 2) - 280
+			el1.config.x = (window.innerWidth / 2) - 280
 			const el2 = JSON.parse(JSON.stringify(this.defBlock))
 			el2.id = id + 1
-			el2.config.x = (+window.innerWidth / 2) + 30
+			el2.config.x = (window.innerWidth / 2) + 30
 			this.addMany({els: [el1, el2], wrap: 'blocks'});
 		},
 		blockClick(e, index) {

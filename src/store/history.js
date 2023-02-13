@@ -24,7 +24,7 @@ export default {
 		isHistory: (state) => !!state.history.length,
 		isUndo: (state) => state.step > 1 && state.mode !== 'connect',
 		isRedo: (state) => state.step < state.history.length && state.mode !== 'connect',
-		isClear: (state) => state.elements.blocks?.length && state.elements.connections?.length && state.mode !== 'connect',
+		isClear: (state) => state.elements.blocks.length && state.mode !== 'connect',
 		isAdd: (state) => state.mode !== 'connect',
 		mode: (state) => state.mode,
 	},
@@ -85,7 +85,7 @@ export default {
 			if (step > 0 && state.step < state.history.length) commit('setStep', state.step + 1)
 		},
 		removeElements({dispatch}) {
-			dispatch('toHistory', [])
+			dispatch('toHistory', {blocks: [], connections: []})
 		},
 		newConnectMode({commit}, el) {
 			commit('setActive', el)
