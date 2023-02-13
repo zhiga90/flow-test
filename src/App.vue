@@ -42,7 +42,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters('history', ['elements', 'mode']),
+		...mapGetters('history', ['connections', 'mode']),
 	},
 
 	mounted() {
@@ -101,7 +101,7 @@ export default {
 			if (this.mode === 'connect') {
 				const stage = this.$refs.stage.getStage()
 				const pointer = stage.getRelativePointerPosition()
-				const el = this.elements[0]
+				const el = this.connections[0]
 				const points = el.config.points
 				el.config.points = [points[0], points[1], pointer.x - 1, pointer.y - 1]
 			}

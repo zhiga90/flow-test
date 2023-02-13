@@ -12,10 +12,10 @@
 			:is="block.component"
 			:config="block.config"
 			@dragstart="abortDrag"
-			@dragend="updateByIndex({el: $event.target, index, wrap: 'blocks'})"
-			@mouseenter="blocksMouseEnter($event, index)"
-			@mouseleave="blocksMouseLeave(index)"
-			@click="click($event, index)"
+			@dragend="blockDrag($event, index)"
+			@mouseenter="blocksMouseEnter"
+			@mouseleave="blocksMouseLeave"
+			@click="blockClick($event, index)"
 		/>
 	</v-layer>
 </template>
@@ -42,8 +42,9 @@ export default {
 				height: 250,
 				y: (window.innerHeight / 2) - 125,
 			},
-			selected: null,
 		},
+		selected: null,
+		selectedId: '',
 	}),
 	computed: {
 		...mapGetters('history', ['blocks', 'connections', 'isHistory', 'mode']),
@@ -60,97 +61,99 @@ export default {
 
 	methods: {
 		...mapActions('history', ['add', 'addMany', 'updateByIndex', 'newConnectMode', 'connectModeReject', 'connectModeSuccess']),
-		blocksMouseEnter(e, index) {
-			if (e.target.getClassName() === 'Rect') {
-				this.$emit('cursor', 'pointer')
-				// if (this.selected && this.selected + 1 !== index) {
-				// 	this.elements[index].config.stroke = blue02
-				// }
-			}
+		getId() {
+			return (new Date()).getTime()
 		},
-		blocksMouseLeave(index) {
+		blocksMouseEnter(e) {
+			this.$emit('cursor', 'pointer')
+			if (this.selected && this.selected._id !== e.target._id) e.target.stroke(blue02)
+		},
+		blocksMouseLeave(e) {
 			this.$emit('cursor', 'default')
-			// if (index !== this.selected + 1) {
-			// 	this.elements[index].config.stroke = grey02
-			// }
+			if (this.selected && this.selected._id !== e.target._id) e.target.stroke(grey02)
+		},
+		blockDrag(e, index) {
+			const el = JSON.parse(JSON.stringify(this.blocks[index]))
+			el.config = e.target.attrs
+			this.updateByIndex({el, index, wrap: 'blocks'})
 		},
 		addDef() {
 			const el = JSON.parse(JSON.stringify(this.defBlock))
+			el.id = this.getId()
+			console.log(el.id)
 			el.config.x = (+window.innerWidth / 2) - 125
-			this.add({el, wrap: 'blocks'});
+			this.add({el, wrap: 'blocks'})
 		},
 		addDefs() {
 			const el1 = JSON.parse(JSON.stringify(this.defBlock))
+			const id = this.getId()
+			el1.id = id
 			el1.config.x = (+window.innerWidth / 2) - 280
 			const el2 = JSON.parse(JSON.stringify(this.defBlock))
+			el2.id = id + 1
 			el2.config.x = (+window.innerWidth / 2) + 30
 			this.addMany({els: [el1, el2], wrap: 'blocks'});
 		},
-		click(e, index) {
-			if (e.target.getClassName() !== 'Rect') return
+		blockClick(e, index) {
 			if (this.mode !== 'connect') {
-				this.startSelect(e.target, index)
+				this.selectedId = this.blocks[index].id
+				this.startSelect(e.target)
 			} else {
 				if (this.selected) {
-					if (index === this.selected + 1) {
-						this.abortSelect()
-					} else {
-						if (e.target.getClassName() === 'Rect') this.endSelect(e.target, index)
-					}
+					this.selected._id === e.target._id
+						? this.abortSelect()
+						: this.endSelect(e.target, index)
 				}
 			}
 		},
 		abortDrag(e) {
 			if (this.mode === 'connect') e.target.stopDrag()
 		},
-		startSelect(target, index) {
+		startSelect(target) {
 			const x = target.x() + (target.width() / 2)
 			const y = target.y() + (target.height() / 2)
 			const stage = this.$parent.$parent?.$parent.$refs?.stage.getStage()
 			const pointer = stage?.getPointerPosition()
-			this.selected = index
-			const selected = this.elements[index]
-			selected.config.stroke = blue02
-			selected.config.dash = [20, 7]
+			this.selected = target
+			target.stroke(blue02)
+			target.dash([20, 7])
 			this.newConnectMode({
 				component: 'v-line',
 				config: {
 					points: [x, y, pointer.x, pointer.y],
 					stroke: blue02,
 					strokeWidth: 2,
-					lineCap: 'round',
-					lineJoin: 'round',
 					dash: [20, 7],
 				},
 			})
 		},
 		abortSelect() {
 			this.resetSelected()
-			this.$nextTick(() => this.connectModeReject())
+			this.connectModeReject()
 		},
 		endSelect(target, index) {
 			this.resetSelected()
-			const points = this.elements[0].config.points
-			const config = this.elements[index].config
-			config.stroke = grey02
-			const half = config.width / 2
-			this.$nextTick(() => this.connectModeSuccess({
+			const points = this.connections[0].config.points
+			target.stroke(grey02)
+			const half = target.width() / 2
+			const leftId = this.selectedId
+			const rightId = this.blocks[index].id
+			this.connectModeSuccess({
 				component: 'v-line',
+				leftId,
+				rightId,
 				config: {
-					points: [points[0], points[1], config.x + half, config.y + half],
+					points: [points[0], points[1], target.x() + half, target.y() + half],
 					stroke: grey01,
 					strokeWidth: 2,
-					lineCap: 'round',
-					lineJoin: 'round',
 				},
-			}))
+			})
 		},
 		async resetSelected() {
-			const selected = this.elements[this.selected + 1]
-			selected.config.stroke = grey02
-			delete selected.config.dash
+			const selected = this.selected
+			selected.stroke(grey02)
+			selected.dash([])
 			this.selected = null
-			await this.$nextTick()
 		},
 	},
 }

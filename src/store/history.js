@@ -30,10 +30,10 @@ export default {
 	},
 	mutations: {
 		setActive(state, el) {
-			state.elements.unshift(el)
+			state.elements.connections.unshift(el)
 		},
 		removeActive(state) {
-			state.elements.shift()
+			state.elements.connections.shift()
 		},
 		setMode(state, mode) {
 			state.mode = mode
@@ -55,18 +55,18 @@ export default {
 	},
 	actions: {
 		add({state, dispatch}, {el, isToTop, wrap}) {
-			const elements = {
-				[wrap]: isToTop ? [...[el], ...state.elements[wrap]] : [...state.elements[wrap], ...[el]],
-			}
+			const elements = state.elements
+			console.log(el.id)
+			elements[wrap][isToTop ? 'unshift' : 'push'](el)
 			dispatch('toHistory', elements)
 		},
 		addMany({state, dispatch}, {els, wrap}) {
-			const elements = {[wrap]: [...state.elements[wrap], ...els]}
+			const elements = state.elements
+			elements[wrap] = [...state.elements[wrap], ...els]
 			dispatch('toHistory', elements)
 		},
 		updateByIndex({state, dispatch}, {el, index, wrap}) {
-			const component = 'v-' + el.getClassName().toLowerCase()
-			state.elements[wrap][index] = {component, config: el.attrs}
+			state.elements[wrap][index] = el
 			dispatch('toHistory', state.elements)
 		},
 		toHistory({state, commit}, els) {
@@ -94,7 +94,7 @@ export default {
 		},
 		connectModeSuccess({dispatch}, el) {
 			dispatch('connectModeReject')
-			dispatch('add', {el, isToTop: true})
+			dispatch('add', {el, wrap: 'connections'})
 		},
 		connectModeReject({commit}) {
 			commit('removeActive')
