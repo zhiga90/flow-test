@@ -11,8 +11,9 @@
 			:key="'block' + index"
 			:is="block.component"
 			:config="block.config"
-			@dragstart="abortDrag"
-			@dragend="blockDrag($event, index)"
+			@dragstart="blockDragStart($event, index)"
+			@dragmove="blockDragMove($event, index)"
+			@dragend="blockDragEnd($event, index)"
 			@mouseenter="blocksMouseEnter"
 			@mouseleave="blocksMouseLeave"
 			@click="blockClick($event, index)"
@@ -72,7 +73,27 @@ export default {
 			this.$emit('cursor', 'default')
 			if (this.selected && this.selected._id !== e.target._id) e.target.stroke(grey02)
 		},
-		blockDrag(e, index) {
+		blockDragStart(e, index) {
+			if (this.mode === 'connect') {
+				e.target.stopDrag()
+			} else {
+				const id = this.blocks[index].id
+				const left = this.connections.filter(item => item.leftId === id)
+				const right = this.connections.filter(item => item.rightId === id)
+				this.selectedId = id
+				this.selected = {left, right}
+			}
+		},
+		blockDragMove(e) {
+			const half = e.target.width() / 2
+			for (const {config} of this.selected.left || []) {
+				config.points = [e.target.x() + half, e.target.y() + half, config.points[2], config.points[3]]
+			}
+			for (const {config} of this.selected.right || []) {
+				config.points = [config.points[0], config.points[1], e.target.x() + half, e.target.y() + half]
+			}
+		},
+		blockDragEnd(e, index) {
 			const el = JSON.parse(JSON.stringify(this.blocks[index]))
 			el.config = e.target.attrs
 			this.updateByIndex({el, index, wrap: 'blocks'})
@@ -80,7 +101,6 @@ export default {
 		addDef() {
 			const el = JSON.parse(JSON.stringify(this.defBlock))
 			el.id = this.getId()
-			console.log(el.id)
 			el.config.x = (+window.innerWidth / 2) - 125
 			this.add({el, wrap: 'blocks'})
 		},
@@ -105,9 +125,6 @@ export default {
 						: this.endSelect(e.target, index)
 				}
 			}
-		},
-		abortDrag(e) {
-			if (this.mode === 'connect') e.target.stopDrag()
 		},
 		startSelect(target) {
 			const x = target.x() + (target.width() / 2)
@@ -140,6 +157,7 @@ export default {
 			const rightId = this.blocks[index].id
 			this.connectModeSuccess({
 				component: 'v-line',
+				id: this.getId(),
 				leftId,
 				rightId,
 				config: {

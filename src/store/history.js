@@ -56,8 +56,7 @@ export default {
 	actions: {
 		add({state, dispatch}, {el, isToTop, wrap}) {
 			const elements = state.elements
-			console.log(el.id)
-			elements[wrap][isToTop ? 'unshift' : 'push'](el)
+			isToTop ? elements[wrap].unshift(el) : elements[wrap].push(el)
 			dispatch('toHistory', elements)
 		},
 		addMany({state, dispatch}, {els, wrap}) {
@@ -98,7 +97,7 @@ export default {
 		},
 		connectModeReject({commit}) {
 			commit('removeActive')
-			commit('setMode', 'null')
+			commit('setMode', null)
 		},
 	},
 	modules: {},
