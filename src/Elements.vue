@@ -1,15 +1,20 @@
 <template>
 	<v-layer>
 		<component
-			v-for="(el, index) in elements"
-			:key="'el' + index"
-			:is="el.component"
-			:config="el.config"
-			ref="el"
+			v-for="(connection, index) in connections"
+			:key="'connection' + index"
+			:is="connection.component"
+			:config="connection.config"
+		/>
+		<component
+			v-for="(block, index) in blocks"
+			:key="'block' + index"
+			:is="block.component"
+			:config="block.config"
 			@dragstart="abortDrag"
-			@dragend="updateByIndex({el: $event.target, index})"
-			@mouseenter="mouseenter($event, index)"
-			@mouseleave="mouseleave(index)"
+			@dragend="updateByIndex({el: $event.target, index, wrap: 'blocks'})"
+			@mouseenter="blocksMouseEnter($event, index)"
+			@mouseleave="blocksMouseLeave(index)"
 			@click="click($event, index)"
 		/>
 	</v-layer>
@@ -26,7 +31,7 @@ export default {
 	},
 
 	data: () => ({
-		def: {
+		defBlock: {
 			component: 'v-rect',
 			config: {
 				stroke: grey02,
@@ -41,7 +46,7 @@ export default {
 		},
 	}),
 	computed: {
-		...mapGetters('history', ['elements', 'isHistory', 'mode']),
+		...mapGetters('history', ['blocks', 'connections', 'isHistory', 'mode']),
 	},
 
 	mounted() {
@@ -55,31 +60,31 @@ export default {
 
 	methods: {
 		...mapActions('history', ['add', 'addMany', 'updateByIndex', 'newConnectMode', 'connectModeReject', 'connectModeSuccess']),
-		mouseenter(e, index) {
+		blocksMouseEnter(e, index) {
 			if (e.target.getClassName() === 'Rect') {
 				this.$emit('cursor', 'pointer')
-				if (this.selected && this.selected + 1 !== index) {
-					this.elements[index].config.stroke = blue02
-				}
+				// if (this.selected && this.selected + 1 !== index) {
+				// 	this.elements[index].config.stroke = blue02
+				// }
 			}
 		},
-		mouseleave(index) {
+		blocksMouseLeave(index) {
 			this.$emit('cursor', 'default')
-			if (index !== this.selected + 1) {
-				this.elements[index].config.stroke = grey02
-			}
+			// if (index !== this.selected + 1) {
+			// 	this.elements[index].config.stroke = grey02
+			// }
 		},
 		addDef() {
-			const el = JSON.parse(JSON.stringify(this.def))
+			const el = JSON.parse(JSON.stringify(this.defBlock))
 			el.config.x = (+window.innerWidth / 2) - 125
-			this.add({el});
+			this.add({el, wrap: 'blocks'});
 		},
 		addDefs() {
-			const el1 = JSON.parse(JSON.stringify(this.def))
+			const el1 = JSON.parse(JSON.stringify(this.defBlock))
 			el1.config.x = (+window.innerWidth / 2) - 280
-			const el2 = JSON.parse(JSON.stringify(this.def))
+			const el2 = JSON.parse(JSON.stringify(this.defBlock))
 			el2.config.x = (+window.innerWidth / 2) + 30
-			this.addMany({els: [el1, el2]});
+			this.addMany({els: [el1, el2], wrap: 'blocks'});
 		},
 		click(e, index) {
 			if (e.target.getClassName() !== 'Rect') return

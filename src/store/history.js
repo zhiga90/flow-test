@@ -1,9 +1,9 @@
-let elements = []
+let elements = {blocks: [], connections: []}
 let history = JSON.parse(localStorage.getItem('history'))
 let step = JSON.parse(localStorage.getItem('step'))
 if (!Number.isInteger(step)) step = 0
 if (Array.isArray(history) && history.length && step > 0) {
-	elements = JSON.parse(history[step - 1])
+	Object.assign(elements, JSON.parse(history[step - 1]))
 } else {
 	history = []
 }
@@ -18,11 +18,13 @@ export default {
 	},
 	getters: {
 		elements: (state) => state.elements,
+		blocks: (state) => state.elements.blocks,
+		connections: (state) => state.elements.connections,
 		history: (state) => state.history,
 		isHistory: (state) => !!state.history.length,
 		isUndo: (state) => state.step > 1 && state.mode !== 'connect',
 		isRedo: (state) => state.step < state.history.length && state.mode !== 'connect',
-		isClear: (state) => state.elements.length && state.mode !== 'connect',
+		isClear: (state) => state.elements.blocks?.length && state.elements.connections?.length && state.mode !== 'connect',
 		isAdd: (state) => state.mode !== 'connect',
 		mode: (state) => state.mode,
 	},
@@ -33,7 +35,7 @@ export default {
 		removeActive(state) {
 			state.elements.shift()
 		},
-		setMode (state, mode) {
+		setMode(state, mode) {
 			state.mode = mode
 		},
 		toHistory(state, elements) {
@@ -52,17 +54,19 @@ export default {
 		},
 	},
 	actions: {
-		add({state, dispatch}, {el, isToTop}) {
-			const elements = isToTop ? [...[el], ...state.elements] : [...state.elements, ...[el]]
+		add({state, dispatch}, {el, isToTop, wrap}) {
+			const elements = {
+				[wrap]: isToTop ? [...[el], ...state.elements[wrap]] : [...state.elements[wrap], ...[el]],
+			}
 			dispatch('toHistory', elements)
 		},
-		addMany({state, dispatch}, {els}) {
-			const elements = [...state.elements, ...els]
+		addMany({state, dispatch}, {els, wrap}) {
+			const elements = {[wrap]: [...state.elements[wrap], ...els]}
 			dispatch('toHistory', elements)
 		},
-		updateByIndex({state, dispatch}, {el, index}) {
+		updateByIndex({state, dispatch}, {el, index, wrap}) {
 			const component = 'v-' + el.getClassName().toLowerCase()
-			state.elements[index] = {component, config: el.attrs}
+			state.elements[wrap][index] = {component, config: el.attrs}
 			dispatch('toHistory', state.elements)
 		},
 		toHistory({state, commit}, els) {
